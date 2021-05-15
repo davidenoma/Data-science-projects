@@ -38,7 +38,7 @@ locationsCode = c(legend="Ahmedabad,Bangalore,Chennai,Coimbatore,Delhi,Hyderabad
 #Feature selection 
 #We are selecting the variables location,
 #We are selecting  Location, Kms Driven, mileage, Engine, Power, to predict Price. 
-
+str(data)#To view variables
 # ensure the results are repeatable
 set.seed(7)
 # load the library
@@ -65,56 +65,73 @@ predictors(results)
 # plot the results
 plot(results, type=c("g", "o"))
 
+#dFinal data with only selected features. 
+new_data <- data[,c(4,8:10,12)]
+# TRAINING AND TEST DATA
+inp <- sample(2, nrow(new_data), replace = TRUE, prob = c(0.7, 0.3))
+training_data <- new_data[inp==1, ]
+test_data <- new_data[inp==2, ]
 
-
-
-regModel <- lm(Price~, data=data)
-su
-
-# Sampling of the data
-set.seed(222)
-inp <- sample(2, nrow(data), replace = TRUE, prob = c(0.7, 0.3))
-training_data <- data[inp==1, ]
-test_data <- data[inp==2, ]
-
-#Step 3: Fitting a Neural Network
-
+#. NEURAL NETWORK
 library(neuralnet)
-set.seed(333)
-n <- neuralnet(Price~ Location,
-               data = data,
-               hidden = 5,
-               err.fct = "sse",
-               linear.output = FALSE,
-               lifesign = 'full',
-               rep = 2,
-               algorithm = "rprop+",
-               stepmax = 100000)
+nn <- neuralnet(Price ~ Kilometers_Driven + Mileage+Power + Engine,data=training_data, hidden=c(2,1), linear.output=TRUE, threshold=0.01)
+nn$result.matrix
 
 # plot our neural network 
-plot(n, rep = 1)
+plot(nn, rep = 1)
 
-
-# error
-n$result.matrix
-
-
-# Prediction
-output <- compute(n, rep = 1, training_data[, -1])
+# Predictionnn
+output <- compute(nn, rep = 1, test_data[-1])
+prediction
 head(output$net.result)
 
 
-# confusion Matrix $Misclassification error -Training data
-output <- compute(n, rep = 1, training_data[, -1])
-p1 <- output$net.result
-pred1 <- ifelse(p1 > 0.5, 1, 0)
-tab1 <- table(pred1, training_data$admit)
-tab1
+results <- data.frame(actual = test_data$Price, prediction = nn$net.result)
+results
+##Regression Tree Example 
 
-#4. NEURAL NETWORK
-library(neuralnet)
-nn <- neuralnet(consumption ~ capacity + gasoline + hours,data=trainset, hidden=c(2,1), linear.output=TRUE, threshold=0.01)
-nn$result.matrix
+
+# Install the package
+install.packages("rpart")
+
+
+# Load the package
+library(rpart)
+
+
+# Create decision tree using regression
+fit <- rpart(mpg ~ disp + hp + cyl, 
+             method = "anova", data = mtcars )
+
+
+# Output to be present as PNG file
+png(file = "decTree2GFG.png", width = 600,
+    height = 600)
+
+# Plot
+plot(fit, uniform = TRUE,
+     main = "MPG Decision Tree using Regression")
+text(fit, use.n = TRUE, cex = .6)
+
+# Saving the file
+dev.off()
+
+
+# Print model
+print(fit)
+
+
+# Create test data
+df  <- data.frame (disp = 351, hp = 250, 
+                   cyl = 8)
+
+# Predicting mpg using testing data and model
+cat("Predicted value:\n")
+predict(fit, df, method = "anova")
+
+
+#Multiple LIneat REgression Example 
+
 
 
 
