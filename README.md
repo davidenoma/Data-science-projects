@@ -23,4 +23,4 @@ CART
 
 MULTIPLE LINEAR REGRESSION 
 
-1. 
+1. https://daviddalpiaz.github.io/appliedstats/multiple-linear-regression.html
