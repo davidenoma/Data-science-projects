@@ -72,22 +72,47 @@ inp <- sample(2, nrow(new_data), replace = TRUE, prob = c(0.7, 0.3))
 training_data <- new_data[inp==1, ]
 test_data <- new_data[inp==2, ]
 
+Price_max_pre_normalize = max(test_data$Price)
+Price_min_pre_normalize = min(test_data$Price) 
+
+# Min-Max Normalization
+
+
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+#Normalize only once as this reasigns to the values.
+training_data$Kilometers_Driven <- normalize(training_data$Kilometers_Driven)
+training_data$Mileage <- normalize(training_data$Mileage)
+training_data$Engine <- normalize(training_data$Engine)
+training_data$Price <- normalize(training_data$Price)
+training_data$Power <- normalize(training_data$Power)
+
+#Normalizing the test set.
+test_data$Kilometers_Driven <- normalize(test_data$Kilometers_Driven)
+test_data$Mileage <- normalize(test_data$Mileage)
+test_data$Engine <- normalize(test_data$Engine)
+test_data$Price <- normalize(test_data$Price)
+test_data$Power <- normalize(test_data$Power)
+
 #. NEURAL NETWORK
 library(neuralnet)
-nn <- neuralnet(Price ~ Kilometers_Driven + Mileage+Power + Engine,data=training_data, hidden=c(2,1), linear.output=TRUE, threshold=0.01)
+nn <- neuralnet(Price ~Kilometers_Driven +Mileage+Power+Engine,data=training_data, hidden=5, linear.output=TRUE, threshold=0.01)
 nn$result.matrix
-
 # plot our neural network 
 plot(nn, rep = 1)
-
-# Predictionnn
-output <- compute(nn, rep = 1, test_data[-1])
-prediction
+# Prediction
+output <- compute(nn, rep = 1, test_data)
 head(output$net.result)
+results <- data.frame(actual = test_data$Price, prediction = output$net.result)
+head(results)
+#Accuracy
+predicted=results$prediction * (Price_max_pre_normalize - Price_min_pre_normalize) + Price_min_pre_normalize
+actual=results$actual * (Price_max_pre_normalize - Price_min_pre_normalize) + Price_min_pre_normalize
+deviation=((actual-predicted)/actual)
+accuracy=1-abs(mean(deviation))
+accuracy
 
-
-results <- data.frame(actual = test_data$Price, prediction = nn$net.result)
-results
 ##Regression Tree Example 
 
 
