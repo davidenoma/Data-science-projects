@@ -17,6 +17,7 @@ for (x in 1:nrow(data)){
   data$Engine[x] <- as.numeric(z)
   }
 #Power
+
 for (x in 1:nrow(data)){
   data$Power[x] <- as.numeric(str_replace_all(data$Power[x],"[a-z]"," "))
 }
@@ -120,11 +121,13 @@ install.packages("rpart")
 # Load the package
 library(rpart)
 
-
 # Create decision tree using regression
-fit <- rpart(mpg ~ disp + hp + cyl, 
-             method = "anova", data = mtcars )
+fit <- rpart(Price ~ Kilometers_Driven +Mileage+Power+Engine, 
+             method = "anova",data=training_data )
 
+install.packages('rpart.plot')
+library(rpart.plot)
+rpart.plot(fit)
 
 # Output to be present as PNG file
 png(file = "decTree2GFG.png", width = 600,
@@ -132,25 +135,30 @@ png(file = "decTree2GFG.png", width = 600,
 
 # Plot
 plot(fit, uniform = TRUE,
-     main = "MPG Decision Tree using Regression")
+     main = "Price Decision Tree using Regression")
+
+
 text(fit, use.n = TRUE, cex = .6)
 
 # Saving the file
 dev.off()
 # Print model
 print(fit)
-
-
-# Create test data
-df  <- data.frame (disp = 351, hp = 250, 
-                   cyl = 8)
-
-# Predicting mpg using testing data and model
+# Predicting Price using testing data and model
 cat("Predicted value:\n")
-predict(fit, df, method = "anova")
+predPrice <- predict(fit, test_data, method = "anova")
+results <- data.frame(actual = test_data$Price, prediction = predPrice)
+head(results)
+#Accuracy
+predicted=results$prediction * (Price_max_pre_normalize - Price_min_pre_normalize) + Price_min_pre_normalize
+actual=results$actual * (Price_max_pre_normalize - Price_min_pre_normalize) + Price_min_pre_normalize
+deviation=((actual-predicted)/actual)
+accuracy=1-abs(mean(deviation))
+accuracy
+
+#Multiple LInear REgression Example 
 
 
-#Multiple LIneat REgression Example 
 
 
 
