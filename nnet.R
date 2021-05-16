@@ -99,7 +99,7 @@ test_data$Power <- normalize(test_data$Power)
 #. NEURAL NETWORK
 library(neuralnet)
 #We can chage the hidden layers configuration to c(2,1)
-nn <- neuralnet(Price ~Kilometers_Driven +Mileage+Power+Engine,data=training_data, hidden=c(5,2), linear.output=TRUE, threshold=0.01)
+nn <- neuralnet(Price ~Kilometers_Driven +Mileage+Power+Engine,data=training_data, hidden=c(2,1), linear.output=TRUE, threshold=0.01)
 nn$result.matrix
 # plot our neural network 
 plot(nn, rep = 1)
@@ -125,9 +125,9 @@ library(rpart)
 fit <- rpart(Price ~ Kilometers_Driven +Mileage+Power+Engine, 
              method = "anova",data=training_data )
 
-install.packages('rpart.plot')
 library(rpart.plot)
 rpart.plot(fit)
+fit$variable.importance
 
 # Output to be present as PNG file
 png(file = "decTree2GFG.png", width = 600,
@@ -156,10 +156,18 @@ deviation=((actual-predicted)/actual)
 accuracy=1-abs(mean(deviation))
 accuracy
 
+#Learn other measures such as precision, recall, F1 Score, Building AUC-ROC Curves
+
 #Multiple LInear REgression Example 
-
-
-
-
-
-
+model <- lm(Price ~ Kilometers_Driven +Mileage+Power+Engine, data=
+              training_data)
+summary(model)
+confint(model)
+mlrPrice<-predict(model,test_data)
+results <- data.frame(actual = test_data$Price, prediction = mlrPrice)
+#Accuracy
+predicted=results$prediction * (Price_max_pre_normalize - Price_min_pre_normalize) + Price_min_pre_normalize
+actual=results$actual * (Price_max_pre_normalize - Price_min_pre_normalize) + Price_min_pre_normalize
+deviation=((actual-predicted)/actual)
+accuracy=1-abs(mean(deviation))
+accuracy
