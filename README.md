@@ -11,3 +11,6 @@ some references:
 4. https://www.datacamp.com/community/tutorials/neural-network-models-r
 
 5. https://www.geeksforgeeks.org/building-a-simple-neural-network-in-r-programming/
+
+Going further:
+https://www.analyticsvidhya.com/blog/2017/09/creating-visualizing-neural-network-in-r/

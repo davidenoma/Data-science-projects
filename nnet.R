@@ -97,7 +97,8 @@ test_data$Power <- normalize(test_data$Power)
 
 #. NEURAL NETWORK
 library(neuralnet)
-nn <- neuralnet(Price ~Kilometers_Driven +Mileage+Power+Engine,data=training_data, hidden=5, linear.output=TRUE, threshold=0.01)
+#We can chage the hidden layers configuration to c(2,1)
+nn <- neuralnet(Price ~Kilometers_Driven +Mileage+Power+Engine,data=training_data, hidden=c(5,2), linear.output=TRUE, threshold=0.01)
 nn$result.matrix
 # plot our neural network 
 plot(nn, rep = 1)
@@ -114,12 +115,8 @@ accuracy=1-abs(mean(deviation))
 accuracy
 
 ##Regression Tree Example 
-
-
 # Install the package
 install.packages("rpart")
-
-
 # Load the package
 library(rpart)
 
@@ -140,8 +137,6 @@ text(fit, use.n = TRUE, cex = .6)
 
 # Saving the file
 dev.off()
-
-
 # Print model
 print(fit)
 
